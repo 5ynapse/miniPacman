@@ -14,10 +14,21 @@ canvas {
 <script>
 
 var myGamePiece;
+var myGamePiece2;
+var myDrawGrid;
 
 function startGame() {
-    myGamePiece = new component(30, 30, "red", 10, 120);
+    myGamePiece = new component(30, 30, "red", 120, 120);
+    //myGamePiece2 = new component(30, 30, "red", 70, 30);
+    myDrawGrid = new component2(30,30);
     myGameArea.start();
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+    myGamePiece.update();
+    //myGamePiece2.update();
+    myDrawGrid.update();
 }
 
 var myGameArea = {
@@ -32,6 +43,64 @@ var myGameArea = {
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+
+
+}
+
+function component2(width, height){
+
+    this.dx = width;
+    this.dy = height;
+
+    this.update = function(){
+        ctx = myGameArea.context;
+        this.drawGrid(ctx.canvas.width,ctx.canvas.height);
+    }
+
+    this.drawGrid = function(width, height){
+        //ctx = myGameArea.context;
+        //var dx = this.width;
+        //var dy = this.height;
+
+    var x = 0;
+    var y = 0;
+    var w = width;
+    var h = height;
+
+    var xy = 10;
+
+    ctx.lineWidth = 1;
+
+    while (y < h) {
+      y = y + this.dy;
+      ctx.moveTo(x, y);
+      ctx.lineTo(w, y);
+
+
+      //ctx.font = "1px Calibri";
+      //ctx.fillText(xy, x, y);
+      xy += 10;
+    }
+
+    
+
+
+    y =0;
+    xy =10;
+    while (x < w) {
+      x = x + this.dx;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x,h);
+
+      //ctx.font = "1px Calibri";
+      //ctx.fillText(xy,x,10);
+      xy+=10;
+    }
+
+    ctx.stroke();
+
+    }
+
 }
 
 function component(width, height, color, x, y) {
@@ -86,13 +155,12 @@ function component(width, height, color, x, y) {
         }
 
     }
+
+
 }
 
 
-function updateGameArea() {
-    myGameArea.clear();
-    myGamePiece.update();
-}
+
 </script>
 <p>The red square is actually being drawn 50 times per second.</p>
 </body>
