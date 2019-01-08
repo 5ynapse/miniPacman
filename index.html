@@ -1,177 +1,182 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        canvas {
-            border: 1px solid #d3d3d3;
-            background-color: #f1f1f1;
-            background-color: #aaa;
-        }
+      canvas {
+        border: 1px solid #d3d3d3;
+        background-color: #f1f1f1;
+        background-color: #aaa;
+      }
     </style>
     <style>
-        body {
-            background-color: #444;
-        }
+      body {
+        background-color: #444;
+      }
     </style>
-</head>
+  </head>
 
-<body onload="startGame()">
+  <body onload="startGame()">
     <script>
+      var myGamePiece;
+      var myGamePiece2;
+      var myDrawGrid;
 
-        var myGamePiece;
-        var myGamePiece2;
-        var myDrawGrid;
+      function startGame() {
+        myGamePiece = new component(30, 30, "red", 120, 120);
+        //myGamePiece2 = new component(30, 30, "red", 70, 30);
+        myDrawGrid = new component2(30, 30);
+        myGameArea.start();
+      }
 
-        function startGame() {
-            myGamePiece = new component(30, 30, "red", 120, 120);
-            //myGamePiece2 = new component(30, 30, "red", 70, 30);
-            myDrawGrid = new component2(30, 30);
-            myGameArea.start();
+      function updateGameArea() {
+        myGameArea.clear();
+        myGamePiece.update();
+        //myGamePiece2.update();
+        myDrawGrid.update();
+      }
+
+      var myGameArea = {
+        canvas: document.createElement("canvas"),
+        start: function() {
+          this.canvas.width = 480;
+          this.canvas.height = 270;
+          this.context = this.canvas.getContext("2d");
+          this.context.fillStyle = "#544";
+          document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+          this.interval = setInterval(updateGameArea, 20);
+        },
+        clear: function() {
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
+      };
 
-        function updateGameArea() {
-            myGameArea.clear();
-            myGamePiece.update();
-            //myGamePiece2.update();
-            myDrawGrid.update();
-        }
+      function component2(width, height) {
+        this.dx = width;
+        this.dy = height;
 
-        var myGameArea = {
-            canvas: document.createElement("canvas"),
-            start: function () {
-                this.canvas.width = 480;
-                this.canvas.height = 270;
-                this.context = this.canvas.getContext("2d");
-                this.context.fillStyle = '#544';
-                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-                this.interval = setInterval(updateGameArea, 20);
-            },
-            clear: function () {
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            }
+        this.update = function() {
+          ctx = myGameArea.context;
+          this.drawGrid(ctx.canvas.width, ctx.canvas.height);
+        };
 
+        this.drawGrid = function(width, height) {
+          //ctx = myGameArea.context;
+          //var dx = this.width;
+          //var dy = this.height;
 
-        }
+          var x = 0;
+          var y = 0;
+          var w = width;
+          var h = height;
 
-        function component2(width, height) {
+          var xy = 10;
 
-            this.dx = width;
-            this.dy = height;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          while (y < h) {
+            y = y + this.dy;
+            ctx.moveTo(x, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
 
-            this.update = function () {
-                ctx = myGameArea.context;
-                this.drawGrid(ctx.canvas.width, ctx.canvas.height);
-            }
+            //ctx.font = "1px Calibri";
+            //ctx.fillText(xy, x, y);
+            xy += 10;
+          }
 
-            this.drawGrid = function (width, height) {
-                //ctx = myGameArea.context;
-                //var dx = this.width;
-                //var dy = this.height;
+          y = 0;
+          xy = 10;
+          while (x < w) {
+            x = x + this.dx;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+            //ctx.font = "1px Calibri";
+            //ctx.fillText(xy,x,10);
+            xy += 10;
+          }
 
-                var x = 0;
-                var y = 0;
-                var w = width;
-                var h = height;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(width, height);
+          ctx.stroke();
+          ctx.strokeStyle = "#ddd";
+        };
+      }
 
-                var xy = 10;
+      function component(width, height, color, x, y) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.moveR = true;
+        this.moveL = false;
+        this.moveUp = false;
+        this.moveDown = false;
+        this.update = function() {
+          ctx = myGameArea.context;
+          ctx.fillStyle = color;
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+          this.moveSquare(ctx.canvas.width, ctx.canvas.height);
 
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                while (y < h) {
-                    y = y + this.dy;
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(w, y);
-                    ctx.stroke();
+        };
 
-                    //ctx.font = "1px Calibri";
-                    //ctx.fillText(xy, x, y);
-                    xy += 10;
-                }
+        this.filedActivate = function(ctx) {
+          ctx.fillStyle = "green";
+          /*
+          x=Math.round(this.x/30);
+          y=Math.round(this.y/30);
+          dxfx=fx=x;
+          fx+=1;
+          dyfy=fy=y;
+          fy+=1;
+          */
+          if(this.x<=30&&this.y<=30){
+            ctx.fillRect(0,0, this.width, this.height);
+          }
+        };
 
-                y = 0;
-                xy = 10;
-                while (x < w) {
-                    x = x + this.dx;
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(x, h);
-                    ctx.stroke();
-                    //ctx.font = "1px Calibri";
-                    //ctx.fillText(xy,x,10);
-                    xy += 10;
-                }
+        this.moveSquare = function(width, height) {
+          //ruch w prawo
+          if (this.x >= width - this.width && this.moveR) {
+            this.moveR = false;
+            this.moveUp = true;
+          } else if (this.x < width - this.width && this.moveR) {
+            this.x += 1;
+            this.filedActivate(ctx);
+            return 1;
+          }
 
-                ctx.moveTo(0, 0);
-                ctx.lineTo(width, height);
-                ctx.stroke();
-                ctx.strokeStyle = "#ddd";
+          if (this.y < 0 && this.moveUp) {
+            this.moveL = true;
+            this.moveUp = false;
+          } else if (this.y >= 0 && this.moveUp) {
+            this.y -= 1;
+            this.filedActivate(ctx);
+            return 1;
+          }
 
-            }
+          if (this.y > height - this.height && this.moveDown) {
+            this.moveDown = false;
+            this.moveR = true;
+          } else if (this.y <= height - this.height && this.moveDown) {
+            this.y += 1;
+            this.filedActivate(ctx);
+            return 1;
+          }
 
-        }
-
-        function component(width, height, color, x, y) {
-            this.width = width;
-            this.height = height;
-            this.x = x;
-            this.y = y;
-            this.moveR = true
-            this.moveL = false
-            this.moveUp = false
-            this.moveDown = false
-            this.update = function () {
-                ctx = myGameArea.context;
-                ctx.fillStyle = color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-                this.moveSquare(ctx.canvas.width, ctx.canvas.height);
-            }
-
-            this.moveSquare = function (width, height) {
-                //ruch w prawo
-                if (this.x >= width - this.width && this.moveR) {
-                    this.moveR = false;
-                    this.moveUp = true;
-                } else if (this.x < width - this.width && this.moveR) {
-                    this.x += 1;
-                    return 1;
-                }
-
-
-                if (this.y < 0 && this.moveUp) {
-                    this.moveL = true;
-                    this.moveUp = false;
-                } else if (this.y >= 0 && this.moveUp) {
-                    this.y -= 1;
-                    return 1;
-                }
-
-                if (this.y > height - this.height && this.moveDown) {
-                    this.moveDown = false
-                    this.moveR = true
-                } else if (this.y <= height - this.height && this.moveDown) {
-                    this.y += 1;
-                    return 1;
-                }
-
-                if (this.x < 0 && this.moveL) {
-                    this.moveDown = true;
-                    this.moveL = false;
-                } else if (this.x >= 0 && this.moveL) {
-                    this.x -= 1;
-                    return 1;
-                }
-
-            }
-
-
-        }
-
-
-
+          if (this.x < 0 && this.moveL) {
+            this.moveDown = true;
+            this.moveL = false;
+          } else if (this.x >= 0 && this.moveL) {
+            this.x -= 1;
+            this.filedActivate(ctx);
+            return 1;
+          }
+        };
+      }
     </script>
     <p>The red square is actually being drawn 50 times per second.</p>
-</body>
-
+  </body>
 </html>
