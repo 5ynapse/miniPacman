@@ -22,11 +22,14 @@
   <script>
     var myGamePiece;
     var myGamePiece2;
+    var obstacle;
     var myDrawGrid;
     var myPosX;
 
     function startGame() {
-      myGamePiece = new component(30, 30, "red", 150, 120);
+      myGamePiece = new component(30, 30, "red", 150, 30);
+      myGamePiece2 = new component(30, 30, "yellow", 60, 180);
+      obstacle = new component(30, 30, "blue", 0, 0);
       //myGamePiece2 = new component(30, 30, "red", 70, 30);
       myDrawGrid = new component2(30, 30);
       myPosX = new component("30px", "Consolas", "black", 280, 40, "text");
@@ -35,8 +38,11 @@
 
     function updateGameArea() {
       myGameArea.clear();
+
       myGamePiece.update();
-      //myGamePiece2.update();
+      myGamePiece2.update();
+      obstacle.update2();
+
       myDrawGrid.update();
 
       myPosX.text = "x:" + myGamePiece.x + ", y:" + myGamePiece.y;
@@ -134,6 +140,13 @@
         }
       };
 
+      this.update2 = function () {
+        ctx = myGameArea.context;
+          ctx.fillStyle = color;
+          ctx.fillRect(0, 0, this.width, this.height);
+          //this.moveSquare(ctx.canvas.width, ctx.canvas.height);
+      };
+
       this.filedActivate = function (ctx) {
         ctx.fillStyle = "green";
         for (i = 0; i < 16 - 1; i++) {
@@ -147,6 +160,7 @@
               if (this.moveL) {
                 ctx.fillRect(30*i, 30*(j), this.width - 5, this.height - 5);
                 ctx.fillRect(30*(i+1), 30*(j), this.width - 5, this.height - 5);
+                this.obstacleDetect(30*i, 30*j);
                 break;
               }
               if (this.moveDown) {
@@ -163,7 +177,12 @@
           }
         }
 
-
+        this.obstacleDetect = function (x,y) {
+           if (x<=30 && y<=30) {
+            this.moveDown = true;
+            this.moveL = false;
+           }
+        }
 
       };
 
